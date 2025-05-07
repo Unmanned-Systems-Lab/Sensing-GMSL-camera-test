@@ -1,0 +1,5 @@
+1、把相机连上工控机
+2、终端打开bash文件夹，sudo ./load_modules.sh，加载驱动模块
+3、sudo ./pcie_init_card0.sh，用于初始化板卡0，因为工控机上只有一个板卡，所以就是板卡0
+4、相机在/dev/video，例如测试第0个相机，使用命令guvcview -d /dev/video0
+5、如果程序有报错，cd pcie_v4l2_sdk然后make clean再meke

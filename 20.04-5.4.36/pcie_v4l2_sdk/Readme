@@ -1,0 +1,847 @@
+驱动程序针对ubuntu18.04、ubuntu20.04版本,其他版本可以向厂家咨询。
+
+一.pcie_v4l2_sdk目录说明
+bash目录： 执行脚本
+Makefile文件：对驱动及应用程序进行Build的整体Makefile文件，
+	     也可以单独进入每一目录进行单独编译。
+xdma_v4l2目录：PCIE板卡的驱动程序
+include目录: xdma头文件
+./tool/pcie_a53_rw目录：对PCIE板卡ps进行读写的应用。
+./tool/pcie_reg_rw目录：对PCIE板卡寄存器进行读写的应用。
+./tool/xdma_v4l2_rw目录：通过驱动提供的v4l2接口对驱动进行配置的应用。
+
+二.使用说明
+进入bash目录，执行如下脚本
+1. sudo ./load_modules.sh  (加载驱动程序)
+加载成功，终端显示如下：
+Loading Pcie driver...
+Pcie driver installed correctly.
+Video devices were recognized.
+DONE
+
+同时在/dev目录会生成video0，video1,video2,video3视频设备文件。
+以及控制接口设备文件
+xdma0_bypass
+xdma0_control
+xdma0_user
+
+其中数字0,代表第1块PCIE板卡，
+其中数字1,代表第2块PCIE板卡，
+以此类推。
+
+2.sudo ./pcie_init_card0.sh （初始化PCIE板卡0，并配置摄像头）
+执行成功，终端显示如下：
+Reset Process!
+Card Params Init Processed!
+Serdes 0 Params Init Processed!
+Serdes 1 Params Init Processed!
+Serdes 2 Params Init Processed!
+Serdes 3 Params Init Processed!
+Serdes 4 Params Init Processed!
+Serdes 5 Params Init Processed!
+Serdes 6 Params Init Processed!
+Serdes 7 Params Init Processed!
+Serdes Params Init Processed!
+Info: All process in pcie_init.sh passed.
+
+
+
+如果程序不能成功运行可以到pcie_v4l2_sdk目录，重新Build来生成驱动和应用。
+make clean
+make
+
+3.图像测试
+图像测试方法采用guvcview开源程序
+系统如果没有安装，采用如下命令安装：
+sudo apt-get install guvcview
+
+图像测试如下：
+guvcview -d /dev/video0
+guvcview -d /dev/video1
+guvcview -d /dev/video2
+guvcview -d /dev/video3
+测试不同通道的摄像头，成功可以实时查看视频流
+
+三.不同摄像头配置参数的修改。
+需要修改pcie_init_card0.sh脚本以及pcie_a53_rw应用程序。
+commit b57105dd5a9451b52dda6fd43bf98e7ae8653e45
+Author: yushuo <yushuo@sensing-world.com>
+Date:   Thu Jan 18 16:32:31 2024 +0800
+
+    支持openv和ffmpeg打开文件
+
+diff --git a/xdma_v4l2_ubuntu20/bash/init_card.log b/xdma_v4l2_ubuntu20/bash/init_card.log
+new file mode 100644
+index 0000000..14ad9bb
+--- /dev/null
++++ b/xdma_v4l2_ubuntu20/bash/init_card.log
+@@ -0,0 +1,636 @@
++2024年 01月 17日 星期三 16:19:15 CST
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++access width: word (32-bits)
++character device /dev/xdma0_user opened.
++Memory mapped at address 0x7fbb1a75a000.
++Write 32-bits value 0x00000000 to 0x00030008 (0x0x7fbb1a78a008)
++access width: word (32-bits)
++character device /dev/xdma0_user opened.
++Memory mapped at address 0x7f22a1f05000.
++Write 32-bits value 0x11111111 to 0x00030010 (0x0x7f22a1f35010)
++open /dev/video0 Successed, fd = 3
++{ pixelformat = 'YUYV'}
++UYVY
++{ pixelformat = 'UYVY'}
++open /dev/video1 Successed, fd = 3
++{ pixelformat = 'YUYV'}
++UYVY
++{ pixelformat = 'UYVY'}
++open /dev/video2 Successed, fd = 3
++{ pixelformat = 'YUYV'}
++UYVY
++{ pixelformat = 'UYVY'}
++open /dev/video3 Successed, fd = 3
++{ pixelformat = 'YUYV'}
++UYVY
++{ pixelformat = 'UYVY'}
++open /dev/video4 Successed, fd = 3
++{ pixelformat = 'YUYV'}
++UYVY
++{ pixelformat = 'UYVY'}
++open /dev/video5 Successed, fd = 3
++{ pixelformat = 'YUYV'}
++UYVY
++{ pixelformat = 'UYVY'}
++open /dev/video6 Successed, fd = 3
++{ pixelformat = 'YUYV'}
++UYVY
++{ pixelformat = 'UYVY'}
++open /dev/video7 Successed, fd = 3
++{ pixelformat = 'YUYV'}
++UYVY
++{ pixelformat = 'UYVY'}
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x48 0x03 0x13 0x0000
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x48 0x00 0x01 0x0001
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x02 0xbe 0x0000
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x00 0x57 0x0012
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x00 0x5b 0x0011
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x03 0x18 0x005e
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x02 0xd3 0x0004
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x02 0xd5 0x0007
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x02 0xd6 0x0004
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x02 0xd8 0x0007
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x48 0x00 0x03 0x0040
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x48 0x02 0xc2 0x0083
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x48 0x02 0xc3 0x00a7
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x48 0x03 0x20 0x002c
++cmd result: 
++
++i2ctransfer -f -y 1 w3@0x40 0x02 0xbe 0x0010
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++Serdes CH 0 Done!
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x48 0x03 0x13 0x0000
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x48 0x00 0x01 0x0001
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x02 0xbe 0x0000
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x00 0x57 0x0012
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x00 0x5b 0x0011
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x03 0x18 0x005e
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x02 0xd3 0x0004
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x02 0xd5 0x0007
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x02 0xd6 0x0004
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x02 0xd8 0x0007
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x48 0x00 0x03 0x0040
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x48 0x02 0xc2 0x0083
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x48 0x02 0xc3 0x00a7
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x48 0x03 0x20 0x002c
++cmd result: 
++
++i2ctransfer -f -y 2 w3@0x40 0x02 0xbe 0x0010
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++Serdes CH 1 Done!
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x48 0x03 0x13 0x0000
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x48 0x00 0x01 0x0001
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x02 0xbe 0x0000
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x00 0x57 0x0012
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x00 0x5b 0x0011
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x03 0x18 0x005e
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x02 0xd3 0x0004
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x02 0xd5 0x0007
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x02 0xd6 0x0004
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x02 0xd8 0x0007
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x48 0x00 0x03 0x0040
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x48 0x02 0xc2 0x0083
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x48 0x02 0xc3 0x00a7
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x48 0x03 0x20 0x002c
++cmd result: 
++
++i2ctransfer -f -y 3 w3@0x40 0x02 0xbe 0x0010
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++Serdes CH 2 Done!
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x48 0x03 0x13 0x0000
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x48 0x00 0x01 0x0001
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x02 0xbe 0x0000
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x00 0x57 0x0012
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x00 0x5b 0x0011
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x03 0x18 0x005e
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x02 0xd3 0x0004
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x02 0xd5 0x0007
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x02 0xd6 0x0004
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x02 0xd8 0x0007
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x48 0x00 0x03 0x0040
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x48 0x02 0xc2 0x0083
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x48 0x02 0xc3 0x00a7
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x48 0x03 0x20 0x002c
++cmd result: 
++
++i2ctransfer -f -y 4 w3@0x40 0x02 0xbe 0x0010
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++Serdes CH 3 Done!
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x48 0x03 0x13 0x0000
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x48 0x00 0x01 0x0001
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x02 0xbe 0x0000
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x00 0x57 0x0012
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x00 0x5b 0x0011
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x03 0x18 0x005e
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x02 0xd3 0x0004
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x02 0xd5 0x0007
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x02 0xd6 0x0004
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x02 0xd8 0x0007
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x48 0x00 0x03 0x0040
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x48 0x02 0xc2 0x0083
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x48 0x02 0xc3 0x00a7
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x48 0x03 0x20 0x002c
++cmd result: 
++
++i2ctransfer -f -y 5 w3@0x40 0x02 0xbe 0x0010
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++Serdes CH 4 Done!
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x48 0x03 0x13 0x0000
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x48 0x00 0x01 0x0001
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x02 0xbe 0x0000
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x00 0x57 0x0012
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x00 0x5b 0x0011
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x03 0x18 0x005e
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x02 0xd3 0x0004
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x02 0xd5 0x0007
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x02 0xd6 0x0004
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x02 0xd8 0x0007
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x48 0x00 0x03 0x0040
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x48 0x02 0xc2 0x0083
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x48 0x02 0xc3 0x00a7
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x48 0x03 0x20 0x002c
++cmd result: 
++
++i2ctransfer -f -y 6 w3@0x40 0x02 0xbe 0x0010
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++Serdes CH 5 Done!
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x48 0x03 0x13 0x0000
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x48 0x00 0x01 0x0001
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x02 0xbe 0x0000
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x00 0x57 0x0012
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x00 0x5b 0x0011
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x03 0x18 0x005e
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x02 0xd3 0x0004
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x02 0xd5 0x0007
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x02 0xd6 0x0004
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x02 0xd8 0x0007
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x48 0x00 0x03 0x0040
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x48 0x02 0xc2 0x0083
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x48 0x02 0xc3 0x00a7
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x48 0x03 0x20 0x002c
++cmd result: 
++
++i2ctransfer -f -y 7 w3@0x40 0x02 0xbe 0x0010
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++Serdes CH 6 Done!
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x48 0x03 0x13 0x0000
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x48 0x00 0x01 0x0001
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x02 0xbe 0x0000
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x00 0x57 0x0012
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x00 0x5b 0x0011
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x03 0x18 0x005e
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x02 0xd3 0x0004
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x02 0xd5 0x0007
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x02 0xd6 0x0004
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x02 0xd8 0x0007
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x48 0x00 0x03 0x0040
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x48 0x02 0xc2 0x0083
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x48 0x02 0xc3 0x00a7
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x48 0x03 0x20 0x002c
++cmd result: 
++
++i2ctransfer -f -y 8 w3@0x40 0x02 0xbe 0x0010
++cmd result: 
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- 48 -- -- -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++
++Serdes CH 7 Done!
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
++cmd result: 
++
++result: 0x0
+diff --git a/xdma_v4l2_ubuntu20/bash/pcie_init_card0.sh b/xdma_v4l2_ubuntu20/bash/pcie_init_card0.sh
+index 6a26bc2..bfda352 100755
+--- a/xdma_v4l2_ubuntu20/bash/pcie_init_card0.sh
++++ b/xdma_v4l2_ubuntu20/bash/pcie_init_card0.sh
+@@ -19,7 +19,7 @@ mipi_disable
+ #camera_pps_ptpmode 0 
+ 
+ # Camera time stamp  source {0: vsync; 1:fsync; 2:frame transfer done; }
+-#timestamp_src 1
++timestamp_src 1
+ 
+ # Camera input format conversion config {0 or 1}
+ camera_input_format_conversion[0]=0
+@@ -77,14 +77,14 @@ camera_triger_delay[7]=0
+ trigger_delay ${camera_triger_delay[@]}
+ 
+ # Camera 0-7 resolution: width height   
+-camera_resolution 0 1920  1080
+-camera_resolution 1 1920  1080
+-camera_resolution 2 1920  1080
+-camera_resolution 3 1920  1080
+-camera_resolution 4 1920  1080
+-camera_resolution 5 1920  1080
+-camera_resolution 6 1920  1080
+-camera_resolution 7 1920  1080
++camera_resolution 0 1920 1080
++camera_resolution 1 1920 1080
++camera_resolution 2 1920 1080
++camera_resolution 3 1920 1080
++camera_resolution 4 1920 1080
++camera_resolution 5 1920 1080
++camera_resolution 6 1920 1080
++camera_resolution 7 1920 1080
+ echo "Card Params Init Processed!"
+ 
+ camera_serdes_type[0]=2
+diff --git a/xdma_v4l2_ubuntu20/xdma_v4l2/xdma_video.c b/xdma_v4l2_ubuntu20/xdma_v4l2/xdma_video.c
+index c2bee5c..e09b227 100755
+--- a/xdma_v4l2_ubuntu20/xdma_v4l2/xdma_video.c
++++ b/xdma_v4l2_ubuntu20/xdma_v4l2/xdma_video.c
+@@ -1046,6 +1046,9 @@ static int xdma_video_set_format(struct xdma_video_channel *vc,
+ 								 unsigned int height)
+ {
+ 	vc->format = format_by_fourcc(pixelformat);
++	if(vc->format == NULL){
++        return -EINVAL;
++    }
+ 	vc->width = width;
+ 	vc->height = height;
+ 	return 0;
+@@ -1065,9 +1068,9 @@ static int xdma_video_s_fmt_vid_cap(struct file *file, void *priv,
+ 	//if (err)
+ 	//	return err;
+ 
+-	xdma_video_set_format(vc, f->fmt.pix.pixelformat,
++	err = xdma_video_set_format(vc, f->fmt.pix.pixelformat,
+ 						  f->fmt.pix.width, f->fmt.pix.height);
+-	return 0;
++	return err;
+ }
+ 
+ static int xdma_video_querycap(struct file *file, void *priv,
+@@ -1254,7 +1257,7 @@ static int xdma_video_g_std(struct file *file, void *priv, v4l2_std_id *id)
+ 	return 0;
+ }*/
+ 
+-/*static int xdma_video_g_parm(struct file *file, void *priv,
++static int xdma_video_g_parm(struct file *file, void *priv,
+ 		struct v4l2_streamparm *sp)
+ {
+ 	struct xdma_video_channel *vc = video_drvdata(file);
+@@ -1267,8 +1270,8 @@ static int xdma_video_g_std(struct file *file, void *priv, v4l2_std_id *id)
+ 
+ 	cp->capability = V4L2_CAP_TIMEPERFRAME;
+ 	cp->timeperframe.numerator = 1;
+-	cp->timeperframe.denominator = para_fps[vc->ch];
+-	//cp->timeperframe.denominator = vc->fps;
++	//cp->timeperframe.denominator = para_fps[vc->ch];
++	cp->timeperframe.denominator = vc->fps;
+ 
+ 	return 0;
+ }
+@@ -1290,9 +1293,9 @@ static int xdma_video_s_parm(struct file *file, void *priv,
+ 	if (vc->fps != fps)
+ 		xdma_video_set_framerate(vc, fps);
+ 	return xdma_video_g_parm(file, priv, sp);
+-}*/
++}
+ 
+-/*static void xdma_video_set_input(struct xdma_video_channel *vc, unsigned int i)
++static void xdma_video_set_input(struct xdma_video_channel *vc, unsigned int i)
+ {
+ 	dbg_video("video%d: \n", vc->num);
+ 	vc->input = i;
+@@ -1328,7 +1331,7 @@ static int xdma_video_enum_input(struct file *file, void *priv,
+ 	struct xdma_video_channel *vc = video_drvdata(file);
+ 
+ 	dbg_video("video%d: \n", vc->num);
+-	if (i->index >= XDMA_VIDEO_INPUTS_PER_CH)
++	if (i->index >= vc->dev->channels) //XDMA_VIDEO_INPUTS_PER_CH
+ 		return -EINVAL;
+ 
+ 	snprintf(i->name, sizeof(i->name), "Composite%d", i->index);
+@@ -1338,7 +1341,7 @@ static int xdma_video_enum_input(struct file *file, void *priv,
+ 	//i->capabilities = V4L2_IN_CAP_STD;
+ 	//i->status = 0;
+ 	return 0;
+-}*/
++}
+ 
+ static const struct v4l2_file_operations xdma_video_fops = {
+ 	.owner = THIS_MODULE,
+@@ -1362,15 +1365,15 @@ static const struct v4l2_ioctl_ops xdma_video_ioctl_ops = {
+ 	//.vidioc_g_std			= xdma_video_g_std,
+ 	//.vidioc_s_std			= xdma_video_s_std,
+ 
+-	//.vidioc_g_parm		= xdma_video_g_parm,
+-	//.vidioc_s_parm		= xdma_video_s_parm,
++	.vidioc_g_parm		= xdma_video_g_parm,
++	.vidioc_s_parm		= xdma_video_s_parm,
+ 
+ 	.vidioc_enum_framesizes = xdma_video_enum_framesizes,
+ 	.vidioc_enum_frameintervals = xdma_video_enum_frameintervals,
+ 
+-	//.vidioc_enum_input		= xdma_video_enum_input,
+-	//.vidioc_g_input		= xdma_video_g_input,
+-	//.vidioc_s_input		= xdma_video_s_input,
++	.vidioc_enum_input		= xdma_video_enum_input,
++	.vidioc_g_input		= xdma_video_g_input,
++	.vidioc_s_input		= xdma_video_s_input,
+ 
+ 	.vidioc_reqbufs = vb2_ioctl_reqbufs,
+ 	.vidioc_querybuf = vb2_ioctl_querybuf,

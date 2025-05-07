@@ -1,0 +1,1 @@
+cmd_/home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/modules.order := {   echo /home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/xdma.ko; :; } | awk '!x[$$0]++' - > /home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/modules.order

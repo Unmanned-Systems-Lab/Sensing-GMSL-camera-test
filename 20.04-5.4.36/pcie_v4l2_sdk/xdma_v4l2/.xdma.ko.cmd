@@ -1,0 +1,1 @@
+cmd_/home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/xdma.ko := ld -r  -m elf_x86_64 -z noexecstack   --build-id=sha1  -T scripts/module.lds -o /home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/xdma.ko /home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/xdma.o /home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/xdma.mod.o;  true

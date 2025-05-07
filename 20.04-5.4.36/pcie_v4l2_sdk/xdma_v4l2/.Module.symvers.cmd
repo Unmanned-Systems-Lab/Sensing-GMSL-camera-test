@@ -1,0 +1,1 @@
+cmd_/home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/Module.symvers := sed 's/\.ko$$/\.o/' /home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/modules.order | scripts/mod/modpost -m -a  -o /home/scjy/20.04-5.4.36/pcie_v4l2_sdk/xdma_v4l2/Module.symvers -e -i Module.symvers   -T -
